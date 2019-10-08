@@ -4,7 +4,7 @@ Use it as a simple redis.
 
 ### Interface 
 #### Cache
-```
+```go
 //Set key to hold the interface value
 //Replace if the key exists
 Set(key string, value interface{})
