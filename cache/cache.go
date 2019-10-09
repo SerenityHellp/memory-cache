@@ -6,39 +6,18 @@ import (
 )
 
 /**
-Data item interface
-*/
-type Item interface {
-	//Always return false if the item has not set expire time
-	//Return true if the item has expired
-	Expire() bool
-}
-
-type ItemImpl struct {
-	Date     interface{}
-	ExpireAt int64
-}
-
-func (item *ItemImpl) Expire() bool {
-	if item.ExpireAt <= 0 {
-		return false
-	}
-	return time.Now().UnixNano() > item.ExpireAt
-}
-
-/**
 cache interface
 */
 type Cache interface {
 	//Set key to hold the interface value
 	//Replace if the key exists
-	Set(key string, value interface{})
+	Set(key string, value interface{}) (b bool)
 
 	//Get the interface value from cache.
 	//Return nil and false if the key not found.
-	Get(key string) (value interface{}, b bool)
+	Get(key string) (value interface{})
 
-	//Same as Set + Get
+	//Same as Set + Get with atomic reset
 	//Get the old interface value and set a new item
 	//Return nil and false if the key not found before set.
 	GetSet(key string, value interface{}) (oValue interface{}, b bool)
@@ -50,7 +29,7 @@ type Cache interface {
 
 	//Set key to hold the interface value with expire duration
 	//Same as Set + Expire
-	//The smallest unit of timeout is seconds
+	//The smallest unit of timeout is Nanosecond
 	SetEx(key string, duration time.Duration, value interface{})
 
 	//Set key to hold string value if key does not exist
@@ -103,7 +82,7 @@ type Cache interface {
 
 	//Set timeout duration on the key from now.
 	//Return boolean, false if the key not exist, true if set timeout successfully
-	//The smallest unit of timeout is seconds
+	//The smallest unit of timeout is Nanosecond
 	Expire(key string, duration time.Duration) bool
 
 	//Set timeout unix timestamp, like Expire
